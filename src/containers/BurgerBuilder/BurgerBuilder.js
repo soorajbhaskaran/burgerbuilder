@@ -7,6 +7,7 @@ import Orderoverview from '../../components/Burger/Orderoverview/Orderoverview';
 import axios from '../../components/axios/axios_instance'
 import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
+//import axios from 'axios'; 
 
 const INCREDIENT_PRICE = {
     cheese: 12,
@@ -17,17 +18,14 @@ const INCREDIENT_PRICE = {
 
 class BurgerBuilder extends React.Component {
     state = {
-        ingredients: {
-            cheese: 0,
-            bacon: 0,
-            meat: 0,
-            salad: 0
-
-        },
+        ingredients: null,
         totalPrice: 10,
         purchaseble: false,
         purchase: false,
         isLoading: false
+    }
+    componentDidMount() {
+        axios.get('url/ingredients.json').then(responce => { this.setState({ ingredients: responce.data }) })
     }
     updatedOrder(ingredients) {
         const purchaseChecking = Object.keys(ingredients).map((item) => { return ingredients[item] }).reduce((sum, el) => {
@@ -89,9 +87,16 @@ class BurgerBuilder extends React.Component {
         for (let key in disabledInfo) {
             disabledInfo[key] = disabledInfo[key] <= 0;
         }
-        let order = <Orderoverview ingredients={this.state.ingredients}
-            show={this.purchaseComplete}
-            continue={this.purchaseContinue} price={this.state.totalPrice} />;
+        let burger = <Spinner />
+        let order = null
+        if (this.state.ingredients) {
+            burger = (<Aux><div><Burger ingredients={this.state.ingredients} /></div>
+                <div><Buildcontrols ingredientAdd={this.addIngredient} ingredientReduce={this.removeIngredient} disable={disabledInfo} price={this.state.totalPrice} purchase={this.state.purchaseble} ordered={this.purchaseHandler} /></div></Aux>)
+
+            order = <Orderoverview ingredients={this.state.ingredients}
+                show={this.purchaseComplete}
+                continue={this.purchaseContinue} price={this.state.totalPrice} />;
+        }
         if (this.state.isLoading) {
             order = <Spinner />
         }
@@ -100,8 +105,7 @@ class BurgerBuilder extends React.Component {
                 <Modal show={this.state.purchase} clicked={this.purchaseComplete}>
                     {order}
                 </Modal>
-                <div><Burger ingredients={this.state.ingredients} /></div>
-                <div><Buildcontrols ingredientAdd={this.addIngredient} ingredientReduce={this.removeIngredient} disable={disabledInfo} price={this.state.totalPrice} purchase={this.state.purchaseble} ordered={this.purchaseHandler} /></div>
+                {burger}
 
             </Aux>
 
