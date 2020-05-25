@@ -1,0 +1,23 @@
+.Contentdata {
+    margin: 20px auto;
+    width: 80%;
+    text-align: center;
+    box-shadow: 3px 3px 4px grey;
+    border: 1px solid grey;
+    box-sizing: border-box;
+    padding: 10px;
+}
+
+.Input {
+    display: block;
+    margin-bottom: 5px;
+}
+
+@media(min-width:600px) {
+    .Contentdata {
+        width: 500px;
+    }
+}
+.Contentdata Button:hover{
+    color: indigo;
+}
